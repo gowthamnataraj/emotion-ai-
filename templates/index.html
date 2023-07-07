@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion Analyzer</title>
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXJ0aWZpY2lhbCUyMGludGVsbGlnZW5jZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333333;
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
+
+        .input-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            resize: none;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333333;
+        }
+
+        .analyze-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .analyze-button:hover {
+            background-color: #45a049;
+        }
+
+        h2 {
+            color: #333333;
+            font-size: 24px;
+            margin-top: 30px;
+        }
+
+        p {
+            color: #666666;
+            font-size: 16px;
+        }
+
+        .emotion {
+            font-weight: bold;
+            color: #ff6600;
+        }
+
+        .stress-relief {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .show-stress-relief {
+            max-height: 500px; /* Adjust the max height as needed */
+        }
+
+        .stress-relief li {
+            margin-bottom: 5px;
+        }
+
+        /* Animation */
+        .stress-relief li {
+            opacity: 0;
+            animation: bounceIn 1s ease forwards;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Design */
+        @media only screen and (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+            .input-textarea {
+                height: 100px;
+                font-size: 14px;
+            }
+            .analyze-button {
+                font-size: 14px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            p {
+                font-size: 14px;
+            }
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
+    <script>
+        $(document).ready(function() {
+            $('.analyze-button').click(function() {
+                // Get user input
+                var inputText = $('.input-textarea').val();
+                
+                // Prepare data for the API request
+                var requestData = {
+                    'text': inputText
+                };
+
+                // Send POST request to the API endpoint
+                $.ajax({
+                    url: '/chat',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function(response) {
+                        // Update the UI with the analysis results
+                        $('.emotion').text(response.emotion);
+                        
+                        // Display stress relief techniques with animation
+                        $('.stress-relief').empty().addClass('show-stress-relief');
+                        for (var i = 0; i < response.stress_relief.length; i++) {
+                            $('.stress-relief').append('<li class="animate__animated animate__bounceIn">' + response.stress_relief[i] + '</li>');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Analyzer</h1>
+        <textarea class="input-textarea" placeholder="Enter your text here"></textarea>
+        <button class="analyze-button">Analyze Emotions</button>
+        <h2>Analysis Results:</h2>
+        <p><strong>Emotion:</strong> <span class="emotion"></span></p>
+        <p><strong>Stress Relief Techniques:</strong></p>
+        <ul class="stress-relief"></ul>
+    </div>
+</body>
+</html>
